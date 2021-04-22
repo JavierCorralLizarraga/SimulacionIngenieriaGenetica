@@ -17,3 +17,7 @@ información genética proveniente de una especie diferente).
 5. Puesta a punto de un esquema de generación de población nuevas y de 
 transmisión de la información genética entre generaciones (utilización de 
 algoritmos genéticos artificiales). 
+
+Participantes:
+* Javier Corral Lizarraga
+* Karen Arteaga Mendoza

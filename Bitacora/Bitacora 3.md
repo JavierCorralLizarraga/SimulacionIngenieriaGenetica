@@ -14,4 +14,4 @@ en resumen si tenemos a un individuo negativo que se junta de individuos positiv
 los individuos que nacen tendrán una posibilidad aleatoria de ser negativos o positivos
 
 la interfaz se vera similar a esta:
-![interfaz](https://imgur.com/a/AuHb10H)
+![interfaz](https://i.imgur.com/ZLncQ5W.png)

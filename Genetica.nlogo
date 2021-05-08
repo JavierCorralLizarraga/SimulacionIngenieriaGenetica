@@ -2,11 +2,12 @@ breed [women woman]    ;; living cells
 breed [men man]   ;; show where a cell will be born
 breed [babies baby]
 
-women-own [fertility age]
-men-own [fertility age]
+women-own [fertility age strength defense]
+men-own [fertility age strength defense]
 babies-own [inheritedFert]
+
 patches-own [
-  live-neighbors  ;; count of how many neighboring cells are alive
+  live-neighbors
 ]
 
 to setup-blank
@@ -22,16 +23,20 @@ end
 
 to setup-random
   setup-blank
-  ask patches[
-    if random-float 100.0 < initial-density[
+  ask n-of initial-density patches [
     ifelse random 10 < 5
       [ sprout-women 1
-        [set fertility random 10
+        [set fertility random 10 + 1
+          set label fertility
+          set strength random 10 + 1
+          set defense random 10 + 1
           set color red]  ]
         [sprout-men 1
-        [set fertility random 10
+        [set fertility random 10 + 1
+          set label fertility
+          set strength random 10 + 1
+          set defense random 10 + 1
           set color blue]
-        ]
     ]
   ]
 
@@ -40,12 +45,10 @@ end
 
 ;; this procedure is called when a cell is about to become alive
 to birth [total] ;; patch procedure
-      sprout-babies 1
-      [ ;; soon-to-be-cells are lime
-        set inheritedFert total
-        set color lime + 1 ]  ;; + 1 makes the lime a bit lighte
+  sprout-babies 1
+  [ set inheritedFert total
+    set color lime + 1 ]
 end
-
 
 
 to go
@@ -56,57 +59,61 @@ to go
   ask women with [color = gray]
     [ die ]
   ;; babies become alive
-
   ask babies
     [ let ih inheritedFert
       ifelse random 10 < 5
       [set breed women
-       set fertility random 1 / 2 * ih
+       set fertility  (random (1 / 2 * ih) + 1)
+       set strength (random(1 / 2 * ih) + 1)
+       set defense (random(1 / 2 * ih) + 1)
+       set label fertility
        set age 1
-        set color red]
+       set color red]
 
       [set breed men
-        set fertility random 1 / 2 * ih
+        set fertility  (random(1 / 2 * ih) + 1)
+        set strength (random(1 / 2 * ih) + 1)
+        set defense (random(1 / 2 * ih) + 1)
+        set label fertility
         set color blue
         set age 1]
   ]
 
-
   ask men[
     set age age + 1
-    if age > 3
+    if age > 10
     [set color gray]
   ]
 
  ask women[
     set age age + 1
-    if age > 3
+    if age > 10
     [set color gray]
   ]
 
-  ask men
-    [
+  ask men[
       let dad fertility
       ask neighbors
       [
-        ask women
-        [
+        ask women-here [
           let mom fertility
-          if age < 4 and dad + mom > 10 [set lst lput (dad + mom) lst
-          print(dad + mom) ]
+          if age < 8 and (dad + mom) > 5
+          [  set color pink
+            set lst lput (dad + mom) lst ]
         ]
       ]
   ]
 
   foreach lst [
-    [?] ->  ask patches[
-      if not any? men-here and not any? women-here [
-        birth ?]]
+    [?] -> ask n-of 1 patches[
+    if not any? men-here and not any? women-here[ birth ?]
+    ]
   ]
+
+
 
   tick
 end
-
 
 
 ;; user adds or removes cells with the mouse
@@ -156,8 +163,8 @@ end
 GRAPHICS-WINDOW
 210
 10
-647
-448
+751
+552
 -1
 -1
 13.0
@@ -170,26 +177,26 @@ GRAPHICS-WINDOW
 1
 1
 1
--16
-16
--16
-16
-0
-0
+-20
+20
+-20
+20
+1
+1
 1
 ticks
 30.0
 
 SLIDER
-24
-211
-196
-244
+31
+249
+203
+282
 initial-density
 initial-density
 10
 300
-25.0
+252.0
 1
 1
 NIL
@@ -237,6 +244,23 @@ BUTTON
 NIL
 setup-blank
 NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+BUTTON
+87
+177
+172
+210
+indefinido
+go
+T
 1
 T
 OBSERVER

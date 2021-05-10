@@ -1,5 +1,5 @@
-breed [women woman]    ;; living cells
-breed [men man]   ;; show where a cell will be born
+breed [women woman]
+breed [men man]
 breed [babies baby]
 
 women-own [fertility age strength defense]
@@ -16,148 +16,145 @@ to setup-blank
   set-default-shape men "circle"
   set-default-shape babies "circle 2"
 
-  ask patches
-    [ set live-neighbors 0 ]
+  ask patches [
+    set live-neighbors 0
+  ]
   reset-ticks
 end
 
 to setup-random
   setup-blank
   ask n-of initial-density patches [
-    ifelse random 10 < 5
-      [ sprout-women 1
-        [set fertility random 10 + 1
-          set label fertility
-          set strength random 10 + 1
-          set defense random 10 + 1
-          set color red]  ]
-        [sprout-men 1
-        [set fertility random 10 + 1
-          set label fertility
-          set strength random 10 + 1
-          set defense random 10 + 1
-          set color blue]
+    ifelse random 10 < 5 [
+      sprout-women 1 [
+        set fertility random 10 + 1
+        set label fertility
+        set strength random 10 + 1
+        set defense random 10 + 1
+        set color red]
+    ][
+      sprout-men 1 [
+        set fertility random 10 + 1
+        set label fertility
+        set strength random 10 + 1
+        set defense random 10 + 1
+        set color blue
+      ]
     ]
   ]
-
-  reset-ticks  ;; set the tick counter back to 0
+  reset-ticks
 end
 
-;; this procedure is called when a cell is about to become alive
-to birth [total] ;; patch procedure
-  sprout-babies 1
-  [ set inheritedFert total
-    set color lime + 1 ]
+to birth [total]
+  sprout-babies 1 [
+    set inheritedFert total
+    set color lime + 1
+  ]
 end
-
 
 to go
   let lst []
-  ;; get rid of the dying cells from the previous tick
   ask men with [color = gray]
     [ die ]
   ask women with [color = gray]
     [ die ]
-  ;; babies become alive
-  ask babies
-    [ let ih inheritedFert
-      ifelse random 10 < 5
-      [set breed women
-       set fertility  (random (1 / 2 * ih) + 1)
-       set strength (random(1 / 2 * ih) + 1)
-       set defense (random(1 / 2 * ih) + 1)
-       set label fertility
-       set age 1
-       set color red]
-
-      [set breed men
-        set fertility  (random(1 / 2 * ih) + 1)
-        set strength (random(1 / 2 * ih) + 1)
-        set defense (random(1 / 2 * ih) + 1)
-        set label fertility
-        set color blue
-        set age 1]
-  ]
-
-  ask men[
-    set age age + 1
-    if age > 10
-    [set color gray]
-  ]
-
- ask women[
-    set age age + 1
-    if age > 10
-    [set color gray]
-  ]
-
-  ask men[
-      let dad fertility
-      ask neighbors
-      [
-        ask women-here [
-          let mom fertility
-          if age < 8 and (dad + mom) > 5
-          [  set color pink
-            set lst lput (dad + mom) lst ]
-        ]
-      ]
-  ]
-
-  foreach lst [
-    [?] -> ask n-of 1 patches[
-    if not any? men-here and not any? women-here[ birth ?]
+  ask babies [
+    let ih inheritedFert
+    ifelse random 10 < 5 [
+      set breed women
+      set fertility  (random (1 / 2 * ih) + 1)
+      set strength (random(1 / 2 * ih) + 1)
+      set defense (random(1 / 2 * ih) + 1)
+      set label fertility
+      set age 1
+      set color red
+    ][
+      set breed men
+      set fertility  (random(1 / 2 * ih) + 1)
+      set strength (random(1 / 2 * ih) + 1)
+      set defense (random(1 / 2 * ih) + 1)
+      set label fertility
+      set color blue
+      set age 1
     ]
   ]
 
+  ask men[
+    set age age + 1
+    if age > 10
+    [set color gray]
+  ]
 
+  ask women[
+    set age age + 1
+    if age > 10
+    [set color gray]
+  ]
 
+  ask men[
+    let dad fertility
+    ask neighbors [
+      ask women-here [
+        let mom fertility
+        if age < 8 and (dad + mom) > 5 [
+          set color pink
+          set lst lput (dad + mom) lst
+        ]
+      ]
+    ]
+  ]
+  foreach lst [
+    [?] -> ask n-of 1 patches [
+      if not any? men-here and not any? women-here [birth ?]
+    ]
+  ]
   tick
 end
 
-
-;; user adds or removes cells with the mouse
 to draw-babies
   let erasing? any? babies-on patch mouse-xcor mouse-ycor
-  while [mouse-down?]
-    [ ask patch mouse-xcor mouse-ycor
-      [ ifelse erasing?
+  while [mouse-down?] [
+    ask patch mouse-xcor mouse-ycor [
+      ifelse erasing?
         [ erase ]
-        [ draw ] ]
-    display ]
+      [ draw ]
+    ]
+    display
+  ]
 end
 
-;; user adds a cell with the mouse
-to draw  ;; patch procedure
-  if not any? babies-here
-    [ ask turtles-here [ die ]  ;; old cells and babies go away
-      sprout-babies 1 [ set color white ]
-      update
-      ask neighbors [ update ] ]
+
+to draw
+  if not any? babies-here [
+    ask turtles-here [ die ]
+    sprout-babies 1 [ set color white ]
+    update
+    ask neighbors [ update ]
+  ]
 end
 
-;; user removes a cell with the mouse
-to erase  ;; patch procedure
+
+to erase
   ask turtles-here [ die ]
   update
   ask neighbors [ update ]
 end
 
-;; this isn't called from GO.  it's only used for
-;; bringing individual patches up to date in response to
-;; the user adding or removing cells with the mouse.
-to update  ;; patch procedure
+to update
   ask babies-here
     [ die ]
   let n count men-on neighbors
-  ifelse any? men-here
-    [ ifelse n = 2 or n = 3
+  ifelse any? men-here [
+    ifelse n = 2 or n = 3
       [ ask men-here [ set color white ] ]
-      [ ask men-here [ set color gray  ] ] ]
-    [ if n = 3
-      [ sprout-babies 1
-        [ set color lime + 1 ] ] ]
-  set live-neighbors 0  ;; reset for next time through "go"
+    [ ask men-here [ set color gray  ] ]
+  ][
+    if n = 3 [
+      sprout-babies 1
+      [ set color lime + 1 ]
+    ]
+  ]
+  set live-neighbors 0
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -254,9 +251,9 @@ NIL
 1
 
 PLOT
-668
+672
 10
-1096
+1100
 231
 grafica de poblacion maybe
 ticks
@@ -394,9 +391,9 @@ NIL
 1
 
 PLOT
-669
+673
 234
-1098
+1102
 446
 grafica de los traits promedio
 tiks

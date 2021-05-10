@@ -4,7 +4,7 @@ breed [babies baby]
 
 women-own [fertility age strength defense]
 men-own [fertility age strength defense]
-babies-own [inheritedFert]
+babies-own [inheritedFert fertility age strength defense]
 
 patches-own [
   live-neighbors
@@ -188,10 +188,10 @@ ticks
 30.0
 
 SLIDER
-25
-238
-197
-271
+19
+244
+210
+277
 initial-density
 initial-density
 10
@@ -203,10 +203,10 @@ NIL
 HORIZONTAL
 
 BUTTON
-55
-30
-176
-63
+19
+47
+211
+80
 NIL
 setup-random
 NIL
@@ -220,10 +220,10 @@ NIL
 1
 
 BUTTON
-71
-130
-134
-163
+20
+147
+213
+180
 NIL
 go
 NIL
@@ -237,10 +237,10 @@ NIL
 1
 
 BUTTON
-74
-80
-180
-113
+19
+97
+211
+130
 NIL
 setup-blank
 NIL
@@ -254,10 +254,10 @@ NIL
 1
 
 PLOT
-737
-23
-1152
-319
+668
+10
+1096
+231
 grafica de poblacion maybe
 ticks
 individuos vivos
@@ -275,20 +275,20 @@ PENS
 "individuos originales" 1.0 0 -2674135 true "" ""
 
 CHOOSER
-432
-552
-570
-597
+390
+545
+528
+590
 tipo-de-insercion
 tipo-de-insercion
 "uno" "varios local" "varios disperso"
 0
 
 BUTTON
-603
-552
-766
-585
+561
+545
+724
+578
 Insertar gen modificado
 Insertar-gen-modificado
 NIL
@@ -302,20 +302,20 @@ NIL
 1
 
 TEXTBOX
-230
-478
-405
-553
+188
+471
+363
+546
 Elige las caracteristicas del individuo modificado geneticamente que quieres insertar a la simulacion.
 12
 0.0
 1
 
 SLIDER
-229
-549
-401
-582
+187
+542
+359
+575
 Nueva-Fuerza
 Nueva-Fuerza
 0
@@ -327,10 +327,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-228
-589
-400
-622
+186
+582
+358
+615
 Nueva-Fertilidad
 Nueva-Fertilidad
 0
@@ -342,10 +342,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-227
-627
-399
-660
+185
+620
+357
+653
 Nueva-Defensa
 Nueva-Defensa
 0
@@ -357,30 +357,30 @@ NIL
 HORIZONTAL
 
 TEXTBOX
-436
-497
-586
-527
+394
+490
+544
+520
 Elige cuantos quieres insertar a la vez\n
 12
 0.0
 1
 
 TEXTBOX
-611
-468
-761
-543
+569
+461
+719
+536
 Inserta a los individuos con genes modificados si es disperso o permite elegir donde se quiere insertar al individuo o grupo localizado
 12
 0.0
 1
 
 BUTTON
-62
-173
-171
-206
+21
+190
+213
+227
 go indefinitely
 go
 T
@@ -392,6 +392,26 @@ NIL
 NIL
 NIL
 1
+
+PLOT
+669
+234
+1098
+446
+grafica de los traits promedio
+tiks
+cantidad
+0.0
+100.0
+0.0
+10.0
+true
+true
+"" ""
+PENS
+"Fuerza" 1.0 0 -2674135 true "" "let _t turtles if (any? _t) [plot mean [strength] of _t]\n"
+"Fertilidad" 1.0 0 -13840069 true "" "let _t turtles if (any? _t) [plot mean [fertility] of _t]\n"
+"Defensa" 1.0 0 -7500403 true "" "let _t turtles if (any? _t) [plot mean [defense] of _t]\n"
 
 @#$#@#$#@
 ## WHAT IS IT?

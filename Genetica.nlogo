@@ -52,6 +52,30 @@ to birth [total]
   ]
 end
 
+to insertar-gen-modificado
+  ifelse tipo-de-insercion = "uno" [
+    ifelse tipo-de-insercion = "varios local" [ ;; caso varios local
+      let i 0
+      while [i <  50][
+        birth [
+
+        ]
+      ]
+    ][ ;; caso uno
+      birth [ ;; nace donde este el mouse
+
+      ]
+    ]
+  ][ ;; caso varios disperso
+    let i 0
+    while [i < 50][
+      birth [
+
+      ]
+    ]
+  ]
+end
+
 to go
   let lst []
   ask men with [color = gray]

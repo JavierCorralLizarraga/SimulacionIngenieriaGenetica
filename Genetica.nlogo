@@ -4,38 +4,33 @@ breed [babies baby]
 
 women-own [fertility age strength defense]
 men-own [fertility age strength defense]
-babies-own [inheritedFert fertility age strength defense]
+babies-own [inF inS inD]
 
-patches-own [
-  live-neighbors
-]
 
 to setup-blank
   clear-all
   set-default-shape women "circle"
   set-default-shape men "circle"
   set-default-shape babies "circle 2"
-
-  ask patches [
-    set live-neighbors 0
-  ]
   reset-ticks
 end
 
 to setup-random
   setup-blank
-  ask n-of initial-density patches [
+  let numPat round (initial-density * count patches / 100)
+  show numPat
+  ask n-of numPat patches [
     ifelse random 10 < 5 [
       sprout-women 1 [
-        set fertility random 10 + 1
-        set label fertility
+        set fertility (random 10) + 3
+        set label round fertility
         set strength random 10 + 1
         set defense random 10 + 1
         set color red]
     ][
       sprout-men 1 [
-        set fertility random 10 + 1
-        set label fertility
+        set fertility (random 10) + 3
+        set label round fertility
         set strength random 10 + 1
         set defense random 10 + 1
         set color blue
@@ -45,11 +40,49 @@ to setup-random
   reset-ticks
 end
 
-to birth [total]
+to birth [totalF totalS totalD]
   sprout-babies 1 [
-    set inheritedFert total
+    set inF totalF
+    set inS totalS
+    set inD totalD
     set color lime + 1
   ]
+end
+
+to grow
+  ask men[
+    set age age + 1
+    if age > 8
+    [set color gray]
+  ]
+
+  ask women[
+    set age age + 1
+    if age > 8
+    [set color gray]
+  ]
+
+  ask babies [
+    let ih (list inF inS inD)
+    ifelse random 100 < 50 [
+      set breed women
+      set fertility  (1 / 2 * item 0 ih)
+      set strength (1 / 2 * item 1 ih)
+      set defense (1 / 2 * item 2 ih)
+      set label round fertility
+      set age 1
+      set color red
+    ][
+      set breed men
+      set fertility (1 / 2 * item 0 ih)
+      set strength (1 / 2 * item 1 ih)
+      set defense (1 / 2 * item 2 ih)
+      set label  round fertility
+      set color blue
+      set age 1
+    ]
+  ]
+
 end
 
 to insertar-gen-modificado
@@ -57,23 +90,152 @@ to insertar-gen-modificado
     ifelse tipo-de-insercion = "varios local" [ ;; caso varios local
       let i 0
       while [i <  50][
-        birth [
+        birth 0 0 0
 
-        ]
+
       ]
     ][ ;; caso uno
-      birth [ ;; nace donde este el mouse
+      birth  0 0 0  ;; nace donde este el mouse
 
-      ]
+
     ]
   ][ ;; caso varios disperso
     let i 0
     while [i < 50][
-      birth [
+      birth 0 0 0
 
+
+    ]
+  ]
+end
+
+
+to reproduce
+  let lst []
+
+  ask men[
+    let dad (list fertility strength defense)
+    ask neighbors [
+      ask women-here [
+        let mom (list fertility strength defense)
+        if age < 4 and (item 0 dad + item 0 mom) > 10 [
+          set color pink
+          set lst lput (list (item 0 dad + item 0 mom) (item 1 dad + item 1 mom) (item 2 dad + item 2 mom))lst
+        ]
       ]
     ]
   ]
+
+
+  foreach lst [
+    [?] -> ask n-of 1 patches [
+      if not any? men-here and not any? women-here [birth item 0 ? item 1 ? item 2 ?]
+    ]
+  ]
+
+end
+
+to fight
+  ask men[
+   if age > 2[
+   let s1 strength
+   let d1 defense
+    ask neighbors [
+      ask men-here[
+        if age > 2[
+            let s2 strength
+            let d2 strength
+            if s2 < s1  and d2 < d1 and random 100 < 80[
+              die
+            ]
+            if s2 < s1  and d2 > d1 and random 100 < 50[
+              die
+            ]
+          ]
+      ]
+
+      ask women-here[
+          if age > 2[
+            let s2 strength
+            let d2 strength
+            if s2 < s1  and d2 < d1 and random 100 < 80[
+              die
+            ]
+            if s2 < s1  and d2 > d1 and random 100 < 50[
+              die
+            ]
+          ]
+        ]
+      ]
+    ]
+  ]
+
+ ask women[
+   if age > 2 [
+   let s1 strength
+   let d1 defense
+   ask neighbors [
+        ask men-here[
+          if age > 2[
+            let s2 strength
+            let d2 strength
+            if s2 < s1  and d2 < d1 and random 100 < 80[
+              die
+            ]
+            if s2 < s1  and d2 > d1 and random 100 < 50[
+              die
+            ]
+          ]
+        ]
+
+        ask women-here[
+          if age > 2 [
+            let s2 strength
+            let d2 strength
+            if s2 < s1  and d2 < d1 and random 100 < 80[
+              die
+            ]
+            if s2 < s1  and d2 > d1 and random 100 < 50[
+              die
+            ]
+          ]
+        ]
+      ]
+    ]
+  ]
+
+end
+
+to killPob
+  show count turtles
+  let indice (count turtles * 100) / count patches
+  let treinta round(count turtles * 0.6)
+  show indice
+  if indice > 50 [
+    show treinta
+    ask n-of treinta patches[
+      ask turtles-here [die]
+    ]
+    show "se murió el 50 % de la población por sobrepoblación"
+  ]
+end
+
+
+to stats
+  let mFert 0
+  ask men[
+    if fertility < 5 [ set mFert mFert + 1 ]
+  ]
+  show "hombres con fertilidad menor a 5: "
+  show mFert
+
+  let wFert 0
+  ask women[
+    if fertility < 5 [ set wFert wFert + 1 ]
+  ]
+
+  show "mujeres con fertilidad menor a 5: "
+  show wFert
 end
 
 to go
@@ -82,56 +244,13 @@ to go
     [ die ]
   ask women with [color = gray]
     [ die ]
-  ask babies [
-    let ih inheritedFert
-    ifelse random 10 < 5 [
-      set breed women
-      set fertility  (random (1 / 2 * ih) + 1)
-      set strength (random(1 / 2 * ih) + 1)
-      set defense (random(1 / 2 * ih) + 1)
-      set label fertility
-      set age 1
-      set color red
-    ][
-      set breed men
-      set fertility  (random(1 / 2 * ih) + 1)
-      set strength (random(1 / 2 * ih) + 1)
-      set defense (random(1 / 2 * ih) + 1)
-      set label fertility
-      set color blue
-      set age 1
-    ]
-  ]
 
-  ask men[
-    set age age + 1
-    if age > 10
-    [set color gray]
-  ]
 
-  ask women[
-    set age age + 1
-    if age > 10
-    [set color gray]
-  ]
+  grow
+  fight
+  reproduce
+  killPob
 
-  ask men[
-    let dad fertility
-    ask neighbors [
-      ask women-here [
-        let mom fertility
-        if age < 8 and (dad + mom) > 5 [
-          set color pink
-          set lst lput (dad + mom) lst
-        ]
-      ]
-    ]
-  ]
-  foreach lst [
-    [?] -> ask n-of 1 patches [
-      if not any? men-here and not any? women-here [birth ?]
-    ]
-  ]
   tick
 end
 
@@ -178,17 +297,17 @@ to update
       [ set color lime + 1 ]
     ]
   ]
-  set live-neighbors 0
+
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
 229
 10
-666
-448
+876
+658
 -1
 -1
-13.0
+9.0
 1
 10
 1
@@ -198,10 +317,10 @@ GRAPHICS-WINDOW
 1
 1
 1
--16
-16
--16
-16
+-35
+35
+-35
+35
 0
 0
 1
@@ -209,18 +328,18 @@ ticks
 30.0
 
 SLIDER
-19
-244
-210
-277
+5
+662
+392
+695
 initial-density
 initial-density
-10
-300
-150.0
+0
+100
+17.0
+0.5
 1
-1
-NIL
+%
 HORIZONTAL
 
 BUTTON
@@ -275,9 +394,9 @@ NIL
 1
 
 PLOT
-672
+972
 10
-1100
+1400
 231
 grafica de poblacion maybe
 ticks
@@ -285,8 +404,8 @@ individuos vivos
 0.0
 100.0
 0.0
-1500.0
-false
+10000.0
+true
 true
 "" ""
 PENS
@@ -296,26 +415,26 @@ PENS
 "individuos originales" 1.0 0 -2674135 true "" ""
 
 CHOOSER
-390
-545
-528
-590
+1190
+588
+1328
+633
 tipo-de-insercion
 tipo-de-insercion
 "uno" "varios local" "varios disperso"
 0
 
 BUTTON
-561
-545
-724
-578
+1176
+544
+1339
+577
 Insertar gen modificado
 Insertar-gen-modificado
 NIL
 1
 T
-OBSERVER
+PATCH
 NIL
 NIL
 NIL
@@ -323,35 +442,35 @@ NIL
 1
 
 TEXTBOX
-188
-471
-363
-546
+975
+458
+1150
+533
 Elige las caracteristicas del individuo modificado geneticamente que quieres insertar a la simulacion.
 12
 0.0
 1
 
 SLIDER
-187
-542
-359
-575
+972
+529
+1144
+562
 Nueva-Fuerza
 Nueva-Fuerza
 0
 100
-50.0
+51.0
 1
 1
 NIL
 HORIZONTAL
 
 SLIDER
-186
-582
-358
-615
+971
+569
+1143
+602
 Nueva-Fertilidad
 Nueva-Fertilidad
 0
@@ -363,10 +482,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-185
-620
-357
-653
+970
+607
+1142
+640
 Nueva-Defensa
 Nueva-Defensa
 0
@@ -378,20 +497,20 @@ NIL
 HORIZONTAL
 
 TEXTBOX
-394
-490
-544
-520
+1183
+412
+1333
+442
 Elige cuantos quieres insertar a la vez\n
 12
 0.0
 1
 
 TEXTBOX
-569
-461
-719
-536
+1182
+466
+1332
+541
 Inserta a los individuos con genes modificados si es disperso o permite elegir donde se quiere insertar al individuo o grupo localizado
 12
 0.0
@@ -415,24 +534,44 @@ NIL
 1
 
 PLOT
-673
-234
-1102
-446
+976
+244
+1182
+389
 grafica de los traits promedio
 tiks
 cantidad
 0.0
-100.0
+50.0
 0.0
 10.0
 true
 true
 "" ""
 PENS
-"Fuerza" 1.0 0 -2674135 true "" "let _t turtles if (any? _t) [plot mean [strength] of _t]\n"
-"Fertilidad" 1.0 0 -13840069 true "" "let _t turtles if (any? _t) [plot mean [fertility] of _t]\n"
-"Defensa" 1.0 0 -7500403 true "" "let _t turtles if (any? _t) [plot mean [defense] of _t]\n"
+"Fuerza" 1.0 0 -2674135 true "" "let _t men if (any? _t) [plot mean [strength] of _t]\n"
+"Fertilidad" 1.0 0 -13840069 true "" "let _t men if (any? _t) [plot mean [fertility] of _t]\n"
+"Defensa" 1.0 0 -7500403 true "" "let _t men if (any? _t) [plot mean [defense] of _t]\n"
+
+PLOT
+1202
+241
+1402
+391
+plot 1
+ticks
+cantidad
+0.0
+50.0
+0.0
+10.0
+true
+true
+"" ""
+PENS
+"Fuerza" 1.0 0 -2674135 true "" "let _t women if (any? _t) [plot mean [strength] of _t]"
+"Fertilidad" 1.0 0 -13840069 true "" "let _t women if (any? _t) [plot mean [fertility] of _t]"
+"Defensa" 1.0 0 -9276814 true "" "let _t men if (any? _t) [plot mean [defense] of _t]"
 
 @#$#@#$#@
 ## WHAT IS IT?

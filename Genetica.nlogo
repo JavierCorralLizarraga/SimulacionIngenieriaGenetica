@@ -18,7 +18,7 @@ end
 
 to setup-random
   setup-blank
-  let numPat round (initial-density * count patches / 100)
+  let numPat round (Densidad-Inicial * count patches / 100)
   show numPat
   ask n-of numPat patches [
     ifelse random 10 < 5 [
@@ -289,16 +289,15 @@ to go
 end
 
 
-
 @#$#@#$#@
 GRAPHICS-WINDOW
-2
+8
 10
-823
-832
+658
+661
 -1
 -1
-11.451
+9.0423
 1
 8
 1
@@ -319,12 +318,12 @@ ticks
 30.0
 
 SLIDER
-841
-27
-1237
-60
-initial-density
-initial-density
+687
+10
+1083
+43
+Densidad-Inicial
+Densidad-Inicial
 0
 100
 50.0
@@ -334,11 +333,11 @@ initial-density
 HORIZONTAL
 
 BUTTON
-842
-75
-962
-108
-NIL
+687
+56
+807
+89
+Inicializar
 setup-random
 NIL
 1
@@ -351,11 +350,11 @@ NIL
 1
 
 BUTTON
-844
-125
-963
-158
-NIL
+686
+106
+811
+139
+Avanzar una vez
 go
 NIL
 1
@@ -368,11 +367,11 @@ NIL
 1
 
 BUTTON
-990
-125
-1109
-158
-NIL
+818
+106
+991
+139
+Inicializar en blanco
 setup-blank
 NIL
 1
@@ -385,10 +384,10 @@ NIL
 1
 
 PLOT
-838
-178
-1259
-399
+686
+151
+1198
+336
 Gráfica de población no modificada genéticamente
 ticks
 Individuos
@@ -404,23 +403,13 @@ PENS
 "Bebés " 1.0 0 -13840069 true "" "plot count babies - babiesM\n"
 "Mujeres " 1.0 0 -2674135 true "" "plot count women - womenM"
 
-CHOOSER
-280
-880
-467
-925
-tipo-de-insercion
-tipo-de-insercion
-"Local" "Dispersa"
-1
-
 BUTTON
-495
-897
-671
-995
+482
+714
+658
+812
 Insertar gen modificado
-if tipo-de-insercion = \"Local\" [ insertarMod Cantidad ]\nif tipo-de-insercion = \"Dispersa\" [ insertarMod Cantidad]
+insertarMod Cantidad\n
 NIL
 1
 T
@@ -432,20 +421,20 @@ NIL
 1
 
 TEXTBOX
-29
-853
-232
-915
+16
+670
+219
+732
 Elige las caracteristicas del individuo  geneticamente modificado a insertar a la simulacion:
 12
 0.0
 1
 
 SLIDER
-29
-920
-201
-953
+16
+737
+188
+770
 Nueva-Fuerza
 Nueva-Fuerza
 1
@@ -457,10 +446,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-28
-960
-200
-993
+15
+777
+187
+810
 Nueva-Fertilidad
 Nueva-Fertilidad
 1
@@ -472,10 +461,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-27
-998
-199
-1031
+14
+815
+186
+848
 Nueva-Defensa
 Nueva-Defensa
 1
@@ -487,31 +476,21 @@ NIL
 HORIZONTAL
 
 TEXTBOX
-281
-941
-470
-1001
+247
+696
+436
+756
 Especifica la cantidad de individuos que vas a insertar:\n\n
 12
 0.0
 1
 
-TEXTBOX
-284
-859
-502
-877
-Selecciona el tipo de inserción: 
-12
-0.0
-1
-
 BUTTON
-988
-74
-1107
-111
-go indefinitely
+819
+55
+990
+92
+Avanzar Indefinidamente
 go
 T
 1
@@ -524,17 +503,17 @@ NIL
 1
 
 PLOT
-836
-708
-1259
-890
+686
+591
+1197
+771
 Gráfica de los promedios de genes
 tiks
 cantidad
 0.0
 80.0
 0.0
-12.0
+10.0
 true
 true
 "" ""
@@ -544,17 +523,17 @@ PENS
 "Defensa" 1.0 0 -7500403 true "" "let _t men if (any? _t) [plot mean [defense] of _t]\n"
 
 OUTPUT
-835
-641
-1289
-700
+686
+527
+1203
+586
 14
 
 INPUTBOX
-280
-980
-466
-1040
+246
+735
+432
+795
 Cantidad
 800.0
 1
@@ -562,10 +541,10 @@ Cantidad
 Number
 
 PLOT
-835
-406
-1256
-631
+686
+340
+1201
+523
 Gráfica de los individuos genéticamente modificados
 Ticks
 Individuos
@@ -580,6 +559,21 @@ PENS
 "Hombres" 1.0 0 -11221820 true "" "plot menM"
 "Mujeres" 1.0 0 -1184463 true "" "plot womenM"
 "Bebés" 1.0 0 -612749 true "" "plot babiesM"
+
+SLIDER
+245
+804
+433
+837
+Cantidad
+Cantidad
+0
+5041
+800.0
+50
+1
+NIL
+HORIZONTAL
 
 @#$#@#$#@
 ## WHAT IS IT?

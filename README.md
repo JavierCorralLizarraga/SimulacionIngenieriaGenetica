@@ -2,6 +2,8 @@
 
 Desarrollo e una plataforma informática que simule las consecuencias de la transgenesis (modificación genética), en la dinámica de una población (integración numérica y métodos de visualización de la información).
 
+puedes probarlo [aqui](https://javiercorrallizarraga.github.io/SimulacionIngenieriaGenetica/)
+
 ## Esquema de acción 
  
 1. Caracterización de una población humana virtual definida en términos de un 
